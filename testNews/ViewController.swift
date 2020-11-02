@@ -39,6 +39,7 @@ class ViewController: UIViewController {
         label.font = .boldSystemFont(ofSize: 30)
         label.textAlignment = .left
         label.text = "Маршруты"
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -118,13 +119,13 @@ class ViewController: UIViewController {
     
     func updateCollectionView() {
         DispatchQueue.main.async {
-            var snapshot = NSDiffableDataSourceSnapshot<JSONFile,DataItem>()
-            
+            var snapshot = NSDiffableDataSourceSnapshot<JSONFile, DataItem>()
             snapshot.appendSections(self.controller.itemsView!)
             for section in self.controller.itemsView! {
                 snapshot.appendItems(section.data, toSection: section)
             }
-            self.dataSource?.apply(snapshot, animatingDifferences: true)
+            self.dataSource?.apply(snapshot)
+            self.collectionView.reloadData()
         }
     }
     

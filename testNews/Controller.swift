@@ -29,7 +29,8 @@ class Controller: ControllerInterface {
                 switch self!.page {
                 case 1:
                     self?.itemsView?.append(sdata)
-                case 1...(self?.itemsView?.first?.meta?.last_page)!: self?.itemsView?[0].data.append(contentsOf: sdata.data)
+                case 1...(self?.itemsView?[0].meta?.last_page)!:
+                    self?.itemsView?[0].data.append(contentsOf: sdata.data)
                 default:
                     return
             }

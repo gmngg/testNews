@@ -6,10 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
 
 class CollectionViewCell: UICollectionViewCell {
     
     static let reuseId = "cellId"
+    
+    
     
     override init(frame : CGRect) {
         super.init(frame: frame)
@@ -95,29 +98,12 @@ class CollectionViewCell: UICollectionViewCell {
         guard let url = URL(string: url) else {
             return
         }
+        self.imageView.kf.setImage(with: url)
         
-        DispatchQueue.global(qos: .userInteractive).async {
-            guard let data = try? Data(contentsOf: url as URL) else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                if url == URL(string: self.urlL!) {
-                    self.imageView.image = UIImage(data: data)
-                }
-            }
-        }
-    }
-    
-    var urlL: String? {
-        didSet {
-            imageView.image = nil
-            createImage(url: urlL!)
-        }
     }
     
     func configureView(photoURL: String, nameLocation: String, sityName: String, tagsName: String, rating: Int, time: String ) {
-        urlL = photoURL
+        createImage(url: photoURL)
         tagsItem.text = tagsName
         sityLabel.text = sityName
         nameLabel.text = nameLocation
