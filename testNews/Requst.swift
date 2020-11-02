@@ -9,12 +9,16 @@ import Foundation
 
 class RequestNetwork {
     
-    private func url(numberList: String) -> URLComponents {
+    private func url(parameters: [String : String]) -> URLComponents {
         var urlComponents = URLComponents()
         urlComponents.scheme = API.scheme
         urlComponents.host = API.host
-        urlComponents.path = API.path + numberList
-        
+        urlComponents.path = API.path
+        urlComponents.queryItems = parameters.map {
+            URLQueryItem(
+                name: $0, value: $1
+            )
+        }
         return urlComponents
     }
     
@@ -35,8 +39,8 @@ class RequestNetwork {
         }
     }
     
-    func request(numberList: String, completion: @escaping (Result<Data?, Error>) -> Void) {
-        guard let url = self.url(numberList: numberList).url else {
+    func request(parameters: [String : String], completion: @escaping (Result<Data?, Error>) -> Void) {
+        guard let url = self.url(parameters: parameters).url else {
             return }
         let request = URLRequest(url: url)
         let task = createDataTask(from: request, completion: completion)

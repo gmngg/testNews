@@ -8,43 +8,36 @@
 import Foundation
 
 struct JSONFile: Codable, Hashable {
-    let data: DataItem?
-    let result: String?
+    var data: [DataItem]
+    let links: LinksInfo?
+    let meta: MetaInfo?
 }
 
 struct DataItem: Codable, Hashable {
     let id: Int?
     let title: String?
+    let description: String?
     let created_at: Int?
     let updated_at: Int?
-    let deleted_at: Int?
     let level: Int?
     let distance: String?
     let duration: String?
     let images: [String?]
     let city_id: Int?
     let type: String?
-//    let angle: String?
     let cost: String?
     let contacts: String?
     let status: String?
- //   let direction: [[Double]]
+//    let direction: [[Double]]
     let subtype_id: Int?
     let admin_id: Int?
+    let promo: Bool?
     let tourism_type_id: Int?
+    let accessible_environment: Bool?
     let city: SityData?
-    let tags: [String?]
     let entity: String?
-    let annotation: String?
-    let additions: [String?]
-    let rating: Double?
-    let currentUserRating: String?
+    let rating: Int?
     let countRating: Double?
-    let agency: Agency?
-    let guide: String?
-    let link: String?
-    let favorited: Bool?
-    let schedules: [String?]
 }
 
 struct SityData: Codable, Hashable {
@@ -56,9 +49,9 @@ struct SityData: Codable, Hashable {
     let longitude: String?
     let created_at: Int?
     let updated_at: Int?
-    let deleted_at: String?
     let image: String?
     let zoom: Int?
+    let declension: String?
     let sort: Int?
     let entity: String?
     let name: String?
@@ -101,4 +94,21 @@ struct Agency: Codable, Hashable {
 struct Pivot: Codable, Hashable {
     let trip_id: Int?
     let agency_id: Int?
+}
+
+struct LinksInfo: Codable, Hashable {
+    let first: String?
+    let last: String?
+    let prev: String?
+    let next: String?
+}
+
+struct MetaInfo: Codable, Hashable {
+    var current_page: Int?
+    let from: Int?
+    let last_page: Int?
+    let path: String?
+    let per_page: Int?
+//    let to: Int?
+    let total: Int?
 }

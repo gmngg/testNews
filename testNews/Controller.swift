@@ -16,41 +16,30 @@ class Controller: ControllerInterface {
     let viewController: ViewController
     let model: Model
     let dispatchQueue = DispatchQueue(label: "Zagruzka",qos: .userInteractive)
-    let dispatchGroup = DispatchGroup()
-    let dispatchSemaphore = DispatchSemaphore(value: 0)
-    var page: Int = 1
     var itemsView: [JSONFile]? = [JSONFile]()
+
+    var page: Int = 1
     
     func getItem() {
         dispatchQueue.async {
-            for _ in 1...10 {
-                self.dispatchGroup.enter()
-                self.model.getItems(numberPage: String(self.page),success: { [weak self] data in
-                    self?.page += 1
-                    guard let sdata = data else {
-                        self?.dispatchSemaphore.signal()
-                        self?.dispatchGroup.leave()
-                        return
-                    }
-                    
+            self.model.getItems(numberPage: String(self.page),success: { [weak self] data in
+                guard let sdata = data else {
+                    return
+                }
+                switch self!.page {
+                case 1:
                     self?.itemsView?.append(sdata)
-                    self?.dispatchSemaphore.signal()
-                    self?.dispatchGroup.leave()
-                }, failure: { [weak self] error in
-                    print("Ya tut")
-                    self?.viewController.showAlert()
-                    self?.dispatchSemaphore.signal()
-                    self?.dispatchGroup.leave()
-                })
-                
-                self.dispatchSemaphore.wait()
+                case 1...(self?.itemsView?.first?.meta?.last_page)!: self?.itemsView?[0].data.append(contentsOf: sdata.data)
+                default:
+                    self?.itemsView?.first?.meta?.per_page!
+                    print("Дефолт")
             }
-        }
-        
-        dispatchGroup.notify(queue: dispatchQueue) {
-            DispatchQueue.main.async {
-                self.viewController.updateCollectionView()
-            }
+                self?.page += 1
+                self?.viewController.updateCollectionView()
+            }, failure: { [weak self] error in
+                self?.viewController.showAlert()
+            })
+            
         }
     }
     

@@ -97,7 +97,7 @@ class CollectionViewCell: UICollectionViewCell {
         }
         
         DispatchQueue.global(qos: .userInteractive).async {
-            guard let data = try? Data(contentsOf: url) else {
+            guard let data = try? Data(contentsOf: url as URL) else {
                 return
             }
             
@@ -116,7 +116,7 @@ class CollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configureView(photoURL: String, nameLocation: String, sityName: String, tagsName: String, rating: Double, time: String ) {
+    func configureView(photoURL: String, nameLocation: String, sityName: String, tagsName: String, rating: Int, time: String ) {
         urlL = photoURL
         tagsItem.text = tagsName
         sityLabel.text = sityName
@@ -153,7 +153,7 @@ class CollectionViewCell: UICollectionViewCell {
             tagsItem.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             tagsItem.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             tagsItem.heightAnchor.constraint(equalToConstant: 25),
-            tagsItem.widthAnchor.constraint(equalToConstant: 60),
+            tagsItem.widthAnchor.constraint(equalToConstant: 70),
             
             sityLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
             sityLabel.leadingAnchor.constraint(equalTo: leadingAnchor,constant: 10),

@@ -16,6 +16,8 @@ class ViewController: UIViewController {
         setupView()
         setupCollectionView()
         controller.getItem()
+        crateDataSource()
+        updateCollectionView()
         
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -29,6 +31,7 @@ class ViewController: UIViewController {
     
     var controller: ControllerInterface!
     var collectionView: UICollectionView!
+    var dataSource: UICollectionViewDiffableDataSource<JSONFile,DataItem>?
     
     private lazy var navBarTitle: UILabel = {
         let label = UILabel()
@@ -60,8 +63,24 @@ class ViewController: UIViewController {
         collectionView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseId)
         view.addSubview(collectionView)
-        collectionView.dataSource = self
         collectionView.delegate = self
+    }
+    
+    func crateDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<JSONFile,DataItem>(collectionView: collectionView, cellProvider: {(collection, indexPath, config) -> UICollectionViewCell in
+            guard let cell = collection.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as? CollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.layer.cornerRadius = 8
+            cell.layer.backgroundColor = UIColor.white.cgColor
+            cell.layer.shadowColor = UIColor.gray.cgColor
+            cell.layer.shadowOffset = CGSize(width: 0, height: 2.0)
+            cell.layer.shadowRadius = 2.0
+            cell.layer.shadowOpacity = 0.2
+            cell.layer.masksToBounds = false
+            cell.configureView(photoURL: config.images.first! ?? "fa" , nameLocation: config.title ?? "", sityName: config.city?.name ?? "", tagsName: config.type ?? "", rating: config.rating ?? 1, time: config.duration ?? "")
+            return cell
+        })
     }
     
     private func createCompositionalLayout() -> UICollectionViewLayout {
@@ -98,7 +117,15 @@ class ViewController: UIViewController {
     }
     
     func updateCollectionView() {
-        collectionView?.reloadData()
+        DispatchQueue.main.async {
+            var snapshot = NSDiffableDataSourceSnapshot<JSONFile,DataItem>()
+            
+            snapshot.appendSections(self.controller.itemsView!)
+            for section in self.controller.itemsView! {
+                snapshot.appendItems(section.data, toSection: section)
+            }
+            self.dataSource?.apply(snapshot, animatingDifferences: true)
+        }
     }
     
     func showAlert() {
@@ -111,37 +138,13 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.controller.itemsView?.count ?? 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as? CollectionViewCell else {
-            return UICollectionViewCell()
-        }
-        
-        let items = self.controller.itemsView?[indexPath.item].data
-        
-        cell.layer.cornerRadius = 8
-        cell.layer.backgroundColor = UIColor.white.cgColor
-        cell.layer.shadowColor = UIColor.gray.cgColor
-        cell.layer.shadowOffset = CGSize(width: 0, height: 2.0)
-        cell.layer.shadowRadius = 2.0
-        cell.layer.shadowOpacity = 0.2
-        cell.layer.masksToBounds = false
-        DispatchQueue.main.async {
-            cell.configureView(photoURL: (items?.images.first ?? "") ?? "", nameLocation: items?.title ?? "", sityName: items?.city?.name ?? "", tagsName: items?.agency?.type ?? "", rating: items?.rating ?? 0, time: items?.duration ?? "")
-        }
-        return cell
-    }
+extension ViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard var indexRefresh = self.controller.itemsView?.count else {
+        guard var indexRefresh = self.controller.itemsView?.first?.data.count else {
             return
         }
-        indexRefresh -= 2
+        indexRefresh -= 1
         if indexPath.item == indexRefresh  {
             controller.getItem()
         }

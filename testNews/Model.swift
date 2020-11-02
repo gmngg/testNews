@@ -20,6 +20,7 @@ class Model: ModelInterface {
             case .success(let data):
                 success?(data)
             case .failure(let error):
+                print()
                 failure?(error)
             }
         })
