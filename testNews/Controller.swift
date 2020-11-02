@@ -31,8 +31,7 @@ class Controller: ControllerInterface {
                     self?.itemsView?.append(sdata)
                 case 1...(self?.itemsView?.first?.meta?.last_page)!: self?.itemsView?[0].data.append(contentsOf: sdata.data)
                 default:
-                    self?.itemsView?.first?.meta?.per_page!
-                    print("Дефолт")
+                    return
             }
                 self?.page += 1
                 self?.viewController.updateCollectionView()

@@ -109,6 +109,5 @@ struct MetaInfo: Codable, Hashable {
     let last_page: Int?
     let path: String?
     let per_page: Int?
-//    let to: Int?
     let total: Int?
 }
